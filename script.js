@@ -1,3 +1,7 @@
+// Your Riot API Key
+const apiKey = 'RGAPI-88a580c8-88a6-42ee-a73f-82e2f5eee2a9';
+
+
 document.addEventListener('DOMContentLoaded', function () {
     const numberOfPlayersInput = document.getElementById('numberOfPlayers');
     const playerStatsInputsContainer = document.getElementById('playerStatsInputs');
@@ -15,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
         for (let i = 1; i <= numberOfPlayers; i++) {
             const input = document.createElement('input');
             input.type = 'text';
-            input.placeholder = `Statistics for Player ${i}`;
+            input.placeholder = `Username for Player ${i}`;
             input.id = `playerStat${i}`;
             input.className = 'player-stat'; // For styling if needed
 
@@ -42,9 +46,26 @@ document.addEventListener('DOMContentLoaded', function () {
         for (let i = 1; i <= numberOfPlayers; i++) {
             const input = document.getElementById(`playerStat${i}`);
             if (input && input.value) { // Check if input exists and has a value
-                playerStats.push(input.value);
+
+            // Prompt for summoner name (adjust for your environment, e.g., use a prompt in a browser)
+            const summonerName = input.value
+
+            // Example endpoint to get summoner information by name
+            const endpoint = `https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${summonerName}?api_key=${apiKey}`;
+
+            axios.get(endpoint).then(response => {
+            if (response.status === 200) {
+            const summonerData = response.data;
+            playerStats.push(summonerData);
             }
-        }
+         })
+        .catch(error => {
+        console.error(`Error: ${error.response.status}`);
+        console.error(error.response.data);
+    });
+                
+    }
+}
 
         console.log(playerStats); // Output the array to console (for testing)
         // Here you can further process the array as needed
@@ -53,14 +74,3 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-function generatePlayerName(existingNames) {
-    let name = '';
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-    do {
-        name = '';
-        for (let i = 0; i < 8; i++) {
-            name += characters.charAt(Math.floor(Math.random() * characters.length));
-        }
-    } while (existingNames.has(name)); // Keep generating until a unique name is found
-    return name;
-}

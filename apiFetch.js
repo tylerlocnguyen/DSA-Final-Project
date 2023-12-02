@@ -1,6 +1,19 @@
+//SIMULATING API FETCH with 100k endpoints. 
 
 
-//SIMULATING API FETCH. 
+function generatePlayerName(existingNames) {
+    let name = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    do {
+        name = '';
+        for (let i = 0; i < 8; i++) {
+            name += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+    } while (existingNames.has(name)); // Keep generating until a unique name is found
+    return name;
+}
+
+
 function generateData() {
     const champions = ["Aatrox", "Ahri", "Akali", "Alistar", "Amumu", "Anivia", "Annie", "Ashe", "Azir", "Blitzcrank",
                        "Brand", "Braum", "Caitlyn", "Cassiopeia", "Cho'Gath", "Corki", "Darius", "Diana", "Dr. Mundo",
