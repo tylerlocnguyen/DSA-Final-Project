@@ -1,0 +1,102 @@
+body {
+    background: linear-gradient(to bottom, black, rgb(2, 5, 46));
+    /* Optional background properties for better compatibility */
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+   
+}
+
+.title {
+    color:#C89B3C;
+    font-size: 2em; /* Adjust the font size as needed */
+    margin-bottom: 20px; /* Space below the title */
+}
+
+/* Style for the overall container */
+.form-container {
+    display: grid;
+    place-items: center; /* This centers the content */
+    margin-top: 10rem;
+ 
+
+}
+
+/* Style for the form itself */
+#playerStatsForm {
+    display: grid;
+    gap: 10px; /* Space between grid items */
+    width: 300px; /* Adjust the width as needed */
+}
+
+/* Styling for input fields and button */
+input, button {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Button specific styling */
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* Optional: Add some padding and margin to player stats inputs for better spacing */
+.player-stat {
+    margin-bottom: 5px;
+}
+
+
+.player-container {
+    width: 80%;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.player-statistics p {
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two columns of equal width */
+    gap: 20px; /* Space between the inputs */
+    margin-bottom: 10px; /* Space between rows */
+}
+
+/* Styles for the input fields */
+.player-stat {
+    width: 100%; /* Full width of the grid column */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+
+.label{
+    color: white; 
+}
+
+.selection{
+    position: absolute;
+    top: 12rem;
+    right: 50%;
+    transform: translateX(50%);
+}
