@@ -1,4 +1,4 @@
-League of Legends OTP Tracker
+League of Legends OTP Tracker (Final DSA Project)
 
 Overview
 The League of Legends OTP (One Trick Pony) Tracker is a tool designed for avid League of Legends players and enthusiasts. It acts as a specialized search engine that allows users to search by summoner name to identify their most played champion - essentially, their OTP. The project aims to analyze and compare these champions across a comprehensive database to rank and provide insights on the best OTPs in the game.
