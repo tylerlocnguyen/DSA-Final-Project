@@ -6,8 +6,10 @@
     <title>Ranking Finder</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
-    <script src="script.js" defer></script>
-    <script src="apiFetch.js" defer></script>
+    <script src="apiFetch.js" defer type="module"></script>
+    <script src="script.js" defer type="module"></script>
+    <script src="calcRank.js" defer type="module"></script>
+
 </head>
 <body>
     <div class="container">
@@ -17,6 +19,7 @@
     <div class="selection">
         <label for="champions" class="label">Choose a champion:</label>
         <select id="champions" name="champions">
+            <option value="">-------</option>
             <option value="Aatrox">Aatrox</option>
             <option value="Ahri">Ahri</option>
             <option value="Akali">Akali</option>

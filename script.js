@@ -1,4 +1,25 @@
-// Your Riot API Key
+import { generatedData } from "./apiFetch.js";
+import { appendBAverage } from "./calcRank.js";
+
+// Get the select element
+const selectElement = document.getElementById('champions');
+let filteredData;
+
+// Add an event listener for the 'change' event
+selectElement.addEventListener('change', function(event) {
+    // Get the selected value
+    const selectedChampion = event.target.value;
+
+    // Do something with the selected value
+    console.log('Selected Champion:', selectedChampion);
+
+     filteredData = generatedData.filter(player => player.Champion === selectedChampion);
+     appendBAverage();
+
+});
+
+
+//Riot API Key
 const apiKey = 'RGAPI-88a580c8-88a6-42ee-a73f-82e2f5eee2a9';
 
 
@@ -71,6 +92,9 @@ document.addEventListener('DOMContentLoaded', function () {
         // Here you can further process the array as needed
     });
 });
+
+
+export {filteredData};
 
 
 
