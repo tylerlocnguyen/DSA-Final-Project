@@ -11,11 +11,13 @@ function createPlayerInputFields(numberOfPlayers, container) {
 
     // Create new input fields
     for (let i = 1; i <= numberOfPlayers; i++) {
-        const input = document.createElement('input');
+        const input = document.createElement('input'); //append a class that is relative to 'i'
         input.type = 'text';
         input.placeholder = `Username for Player ${i}`;
         input.id = `playerStat${i}`;
         input.className = 'player-stat'; // For styling if needed
+
+        input.className = `player-stat player-stat-${i}`;
 
         // Create a container for every pair of inputs
         if (i % 2 === 1) { // Start a new row for odd numbered inputs
@@ -95,13 +97,13 @@ const apiKey = 'RGAPI-d190bdc9-bb0f-42de-b08e-aba468b6cad5';
 
 
                 // Store the data in localStorage or sessionStorage
-                // localStorage.setItem('playerStats', JSON.stringify(matchesData));
+                 localStorage.setItem('playerStats', JSON.stringify(final));
         
                 // Redirect to the leaderboard page
-                // window.location.href = 'leaderboard.html';
+                 window.location.href = 'leaderboard.html';
             })
             .catch(error => {
-                console.error(`Error: ${error}`);
+                console.error(`Error: ${error.message}`);
             });
     });
     
@@ -143,13 +145,6 @@ const apiKey = 'RGAPI-d190bdc9-bb0f-42de-b08e-aba468b6cad5';
         }
     }
 
-  /*  function filterByChamp(matchesData) {
-   const allMatches = matchesData.flat();
-
-   const selectedChampion = selectElement.value;
-   let final = allMatches.filter(match => match.championName === selectedChampion);
-   console.log(final);
-    }*/
 
     function filterByChamp(matchesData) {
         const selectedChampion = selectElement.value;
@@ -168,10 +163,13 @@ const apiKey = 'RGAPI-d190bdc9-bb0f-42de-b08e-aba468b6cad5';
 
 
     function processMatchData(filteredMatches) {
-        return filteredMatches.map(playerMatches => {
+        return filteredMatches.map((playerMatches, index) => {
             if (playerMatches.length === 0) return null; // Skip if no matches
     
-            const playerName = playerMatches[0].summonerName; // Assuming summonerName is available in match data
+            // Retrieve player name using the index provided by map function
+            const playerNameInput = document.getElementById(`playerStat${index + 1}`);
+            const playerName = playerNameInput ? playerNameInput.value : `Player ${index + 1}`;
+    
             const gamesPlayed = playerMatches.length;
             const wins = playerMatches.filter(match => match.win).length;
             const winRate = (wins / gamesPlayed) * 100;
@@ -186,12 +184,12 @@ const apiKey = 'RGAPI-d190bdc9-bb0f-42de-b08e-aba468b6cad5';
     
             return {
                 PlayerName: playerName,
-                Champion: playerMatches[0].championName, // Assuming all matches are for the same champion
+                Champion: playerMatches[0].championName,
                 GamesPlayed: gamesPlayed,
                 WinRate: winRate.toFixed(2),
                 KDA: kda.toFixed(2)
             };
-        }).filter(playerData => playerData !== null); // Remove null entries (players with no matches)
+        }).filter(playerData => playerData !== null); // Remove null entries
     }
 
 
