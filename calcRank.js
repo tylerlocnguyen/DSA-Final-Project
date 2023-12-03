@@ -8,15 +8,16 @@ function calculateRankingScore(winRate, gamesPlayed, constant = 30, baseRate = 0
 }
 
 
-function appendBAverage(){
+function appendBAverage(arr) {
+    // Determine which array to use
+    const dataArray = (arr && arr.length > 0) ? arr : filteredData;
 
-// Calculating Bayesian average for each player and appending it to the object
-filteredData.forEach(player => {
-    player.bAverage = calculateRankingScore(player.WinRate, player.GamesPlayed);
-});
+    // Calculating Bayesian average for each player and appending it to the object
+    dataArray.forEach(player => {
+        player.bAverage = calculateRankingScore(player.WinRate, player.GamesPlayed);
+    });
 
-console.log(filteredData);
-
+    console.log(dataArray);
 }
 
 export{appendBAverage};

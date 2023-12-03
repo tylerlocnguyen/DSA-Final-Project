@@ -84,11 +84,16 @@ const apiKey = 'RGAPI-d190bdc9-bb0f-42de-b08e-aba468b6cad5';
             })
             .then(matchesData => {
                 // matchesData contains the results from getMatches
-                // Do something with matchesData
-    
-                // Example: Logging the data
-                console.log(matchesData);
-    
+
+                
+                matchesData = filterByChamp(matchesData)
+                appendBAverage(matchesData);
+                //console.log(matchesData);
+
+                let final = [...matchesData,...filteredData]
+                console.log(final)
+
+
                 // Store the data in localStorage or sessionStorage
                 // localStorage.setItem('playerStats', JSON.stringify(matchesData));
         
@@ -101,7 +106,7 @@ const apiKey = 'RGAPI-d190bdc9-bb0f-42de-b08e-aba468b6cad5';
     });
     
     async function getMatches(puuid) {
-        const matchEndpoint = `https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=35&api_key=${apiKey}`;
+        const matchEndpoint = `https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=10&api_key=${apiKey}`;
     
         try {
             const response = await fetch(matchEndpoint);
@@ -125,6 +130,7 @@ const apiKey = 'RGAPI-d190bdc9-bb0f-42de-b08e-aba468b6cad5';
                             deaths: player.deaths,
                             assists: player.assists,
                             win: player.win
+                       
                         });
                     }
                 }
@@ -137,9 +143,56 @@ const apiKey = 'RGAPI-d190bdc9-bb0f-42de-b08e-aba468b6cad5';
         }
     }
 
-getMatches()
-    
+  /*  function filterByChamp(matchesData) {
+   const allMatches = matchesData.flat();
 
+   const selectedChampion = selectElement.value;
+   let final = allMatches.filter(match => match.championName === selectedChampion);
+   console.log(final);
+    }*/
+
+    function filterByChamp(matchesData) {
+        const selectedChampion = selectElement.value;
+        let filteredMatches = matchesData.map(playerMatches => 
+            playerMatches.filter(match => match.championName === selectedChampion)
+        );
+    
+        // Optionally remove any empty arrays if no matches were found for a player
+        filteredMatches = filteredMatches.filter(playerMatches => playerMatches.length > 0);
+    
+        console.log(filteredMatches);
+        filteredMatches = processMatchData(filteredMatches)
+        return filteredMatches; // Return the array of arrays with filtered matches
+    }
+
+
+
+    function processMatchData(filteredMatches) {
+        return filteredMatches.map(playerMatches => {
+            if (playerMatches.length === 0) return null; // Skip if no matches
+    
+            const playerName = playerMatches[0].summonerName; // Assuming summonerName is available in match data
+            const gamesPlayed = playerMatches.length;
+            const wins = playerMatches.filter(match => match.win).length;
+            const winRate = (wins / gamesPlayed) * 100;
+    
+            let totalKills = 0, totalDeaths = 0, totalAssists = 0;
+            playerMatches.forEach(match => {
+                totalKills += match.kills;
+                totalDeaths += match.deaths;
+                totalAssists += match.assists;
+            });
+            const kda = totalDeaths === 0 ? (totalKills + totalAssists) : (totalKills + totalAssists) / totalDeaths;
+    
+            return {
+                PlayerName: playerName,
+                Champion: playerMatches[0].championName, // Assuming all matches are for the same champion
+                GamesPlayed: gamesPlayed,
+                WinRate: winRate.toFixed(2),
+                KDA: kda.toFixed(2)
+            };
+        }).filter(playerData => playerData !== null); // Remove null entries (players with no matches)
+    }
 
 
 export {filteredData};
