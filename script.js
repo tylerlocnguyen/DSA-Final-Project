@@ -1,6 +1,36 @@
 import { generatedData } from "./apiFetch.js";
 import { appendBAverage } from "./calcRank.js";
 
+const numberOfPlayersInput = document.getElementById('numberOfPlayers');
+const Container = document.getElementById('playerStatsInputs');
+const form = document.getElementById('playerStatsForm');
+
+function createPlayerInputFields(numberOfPlayers, container) {
+    // Clear existing input fields
+    container.innerHTML = '';
+
+    // Create new input fields
+    for (let i = 1; i <= numberOfPlayers; i++) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.placeholder = `Username for Player ${i}`;
+        input.id = `playerStat${i}`;
+        input.className = 'player-stat'; // For styling if needed
+
+        // Create a container for every pair of inputs
+        if (i % 2 === 1) { // Start a new row for odd numbered inputs
+            const row = document.createElement('div');
+            row.className = 'input-row';
+            container.appendChild(row);
+        }
+
+        const lastRow = container.lastElementChild;
+        lastRow.appendChild(input);
+    }
+}
+
+
+
 // Get the select element
 const selectElement = document.getElementById('champions');
 let filteredData;
@@ -20,78 +50,96 @@ selectElement.addEventListener('change', function(event) {
 
 
 //Riot API Key
-const apiKey = 'RGAPI-88a580c8-88a6-42ee-a73f-82e2f5eee2a9';
+const apiKey = 'RGAPI-d190bdc9-bb0f-42de-b08e-aba468b6cad5';
 
-
-document.addEventListener('DOMContentLoaded', function () {
-    const numberOfPlayersInput = document.getElementById('numberOfPlayers');
-    const playerStatsInputsContainer = document.getElementById('playerStatsInputs');
-    const form = document.getElementById('playerStatsForm');
-
-    
 
     numberOfPlayersInput.addEventListener('change', function () {
         const numberOfPlayers = parseInt(this.value, 10);
-
-        // Clear existing input fields
-        playerStatsInputsContainer.innerHTML = '';
-
-        // Create new input fields
-        for (let i = 1; i <= numberOfPlayers; i++) {
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.placeholder = `Username for Player ${i}`;
-            input.id = `playerStat${i}`;
-            input.className = 'player-stat'; // For styling if needed
-
-                    // Create a container for every pair of inputs
-        if (i % 2 === 1) { // Start a new row for odd numbered inputs
-            const row = document.createElement('div');
-            row.className = 'input-row';
-            playerStatsInputsContainer.appendChild(row);
-        }
-
-        const lastRow = playerStatsInputsContainer.lastElementChild;
-        lastRow.appendChild(input);
-    
-        }
+        createPlayerInputFields(numberOfPlayers,Container);
     });
+
+
 
     form.addEventListener('submit', function (e) {
         e.preventDefault(); // Prevents the default form submission action
-
-        const playerStats = [];
-
-        // Loop through the number of players and collect their stats
+    
+        let playerStatsPromises = [];
         const numberOfPlayers = parseInt(numberOfPlayersInput.value, 10);
+    
         for (let i = 1; i <= numberOfPlayers; i++) {
             const input = document.getElementById(`playerStat${i}`);
-            if (input && input.value) { // Check if input exists and has a value
-
-            // Prompt for summoner name (adjust for your environment, e.g., use a prompt in a browser)
-            const summonerName = input.value
-
-            // Example endpoint to get summoner information by name
-            const endpoint = `https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${summonerName}?api_key=${apiKey}`;
-
-            axios.get(endpoint).then(response => {
-            if (response.status === 200) {
-            const summonerData = response.data;
-            playerStats.push(summonerData);
+            if (input && input.value) {
+                const summonerName = input.value;
+                const endpoint = `https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${summonerName}?api_key=${apiKey}`;
+                playerStatsPromises.push(axios.get(endpoint));
             }
-         })
-        .catch(error => {
-        console.error(`Error: ${error.response.status}`);
-        console.error(error.response.data);
+        }
+    
+        Promise.all(playerStatsPromises)
+            .then(responses => {
+                const playerStats = responses.map(response => response.status === 200 ? response.data : null).filter(data => data != null);
+    
+                // Process each player's matches
+                return Promise.all(playerStats.map(playerStat => getMatches(playerStat.puuid)));
+            })
+            .then(matchesData => {
+                // matchesData contains the results from getMatches
+                // Do something with matchesData
+    
+                // Example: Logging the data
+                console.log(matchesData);
+    
+                // Store the data in localStorage or sessionStorage
+                // localStorage.setItem('playerStats', JSON.stringify(matchesData));
+        
+                // Redirect to the leaderboard page
+                // window.location.href = 'leaderboard.html';
+            })
+            .catch(error => {
+                console.error(`Error: ${error}`);
+            });
     });
-                
+    
+    async function getMatches(puuid) {
+        const matchEndpoint = `https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=35&api_key=${apiKey}`;
+    
+        try {
+            const response = await fetch(matchEndpoint);
+            if (!response.ok) {
+                throw new Error(`Error fetching matchlist: ${response.status}`);
+            }
+            const matchlistData = await response.json();
+    
+            let matchDetails = [];
+    
+            for (let matchId of matchlistData) {
+                const endpoint = `https://americas.api.riotgames.com/lol/match/v5/matches/${matchId}?api_key=${apiKey}`;
+                const matchResponse = await fetch(endpoint);
+                const matchData = await matchResponse.json();
+    
+                for (let player of matchData.info.participants) {
+                    if (player.puuid === puuid) {
+                        matchDetails.push({
+                            championName: player.championName,
+                            kills: player.kills,
+                            deaths: player.deaths,
+                            assists: player.assists,
+                            win: player.win
+                        });
+                    }
+                }
+            }
+    
+            return matchDetails;
+        } catch (error) {
+            console.error(error.message);
+            return null; // Return null or appropriate error response
+        }
     }
-}
 
-        console.log(playerStats); // Output the array to console (for testing)
-        // Here you can further process the array as needed
-    });
-});
+getMatches()
+    
+
 
 
 export {filteredData};
