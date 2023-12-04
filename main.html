@@ -6,6 +6,8 @@
     <title>Ranking Finder</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
+    <script src="bogoSort.js" defer type="module"></script>
+    <script src="radixSort.js" defer type="module"></script>
     <script src="apiFetch.js" defer type="module"></script>
     <script src="script.js" defer type="module"></script>
     <script src="calcRank.js" defer type="module"></script>
@@ -34,7 +36,7 @@
             <option value="Braum">Braum</option>
             <option value="Caitlyn">Caitlyn</option>
             <option value="Cassiopeia">Cassiopeia</option>
-            <option value="ChoGath">Cho'Gath</option>
+            <option value="Chogath">Cho'Gath</option>
             <option value="Corki">Corki</option>
             <option value="Darius">Darius</option>
             <option value="Diana">Diana</option>
@@ -179,6 +181,15 @@
             <option value="Vex">Vex</option>
         </select>
         </div>
+        <!-- Dropdown for Sorting Methods -->
+       <div class="selectionForSort">
+        <label for="sortMethod" class="label">Sort by:</label>
+            <select id="sortMethod">
+             <option value="">-------</option>
+             <option value="countingSort">Counting Sort</option>
+             <option value="radixSort">Radix Sort</option>
+        </select>
+    </div>
 
     <div class="form-container">
         <form id="playerStatsForm">

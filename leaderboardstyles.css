@@ -1,0 +1,20 @@
+#leaderboard {
+    width: 100%;
+    max-width: 600px; /* or any other maximum width */
+    margin: auto;
+}
+
+.player-entry {
+    border: 1px solid black;
+    margin-bottom: 10px;
+    padding: 10px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+}
+
+body {
+    background: linear-gradient(to bottom, black, rgb(2, 5, 46));
+    /* Optional background properties for better compatibility */
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}

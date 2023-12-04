@@ -4,6 +4,8 @@ import { appendBAverage } from "./calcRank.js";
 const numberOfPlayersInput = document.getElementById('numberOfPlayers');
 const Container = document.getElementById('playerStatsInputs');
 const form = document.getElementById('playerStatsForm');
+const sortMethodSelect = document.getElementById('sortMethod');
+
 
 function createPlayerInputFields(numberOfPlayers, container) {
     // Clear existing input fields
@@ -52,7 +54,7 @@ selectElement.addEventListener('change', function(event) {
 
 
 //Riot API Key
-const apiKey = 'RGAPI-571bc804-bf84-47fc-a848-cb049c9b7e7e';
+const apiKey = 'RGAPI-fa781e32-d4db-4213-b537-d8ef30d5381f';
 
 
     numberOfPlayersInput.addEventListener('change', function () {
@@ -98,9 +100,10 @@ const apiKey = 'RGAPI-571bc804-bf84-47fc-a848-cb049c9b7e7e';
 
                 // Store the data in localStorage or sessionStorage
                  localStorage.setItem('playerStats', JSON.stringify(final));
-        
+                 const selectedMethod = sortMethodSelect.value;
                 // Redirect to the leaderboard page
-                 window.location.href = 'leaderboard.html';
+                  window.location.href = `leaderboard.html?sortMethod=${encodeURIComponent(selectedMethod)}`;
+
             })
             .catch(error => {
                 console.error(`Error: ${error.message}`);
@@ -108,7 +111,7 @@ const apiKey = 'RGAPI-571bc804-bf84-47fc-a848-cb049c9b7e7e';
     });
     
     async function getMatches(puuid) {
-        const matchEndpoint = `https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=10&api_key=${apiKey}`;
+        const matchEndpoint = `https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=25&api_key=${apiKey}`;
     
         try {
             const response = await fetch(matchEndpoint);
@@ -187,7 +190,8 @@ const apiKey = 'RGAPI-571bc804-bf84-47fc-a848-cb049c9b7e7e';
                 Champion: playerMatches[0].championName,
                 GamesPlayed: gamesPlayed,
                 WinRate: winRate.toFixed(2),
-                KDA: kda.toFixed(2)
+                KDA: kda.toFixed(2),
+                colorTag: "yellow"
             };
         }).filter(playerData => playerData !== null); // Remove null entries
     }

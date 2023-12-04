@@ -100,3 +100,11 @@ button:hover {
     right: 50%;
     transform: translateX(50%);
 }
+.selectionForSort{
+    position: absolute;
+    top: 9rem;
+    right: 50%;
+    transform: translateX(50%);
+}
+
+}

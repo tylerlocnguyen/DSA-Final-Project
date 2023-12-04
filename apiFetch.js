@@ -53,7 +53,5 @@ function generateData() {
 const generatedData = generateData(); // this is an array.
 
 
-// Example: Output the first 5 entries as test.
-console.log(generatedData.slice(0, 5));
 
 export { generatedData };
