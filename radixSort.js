@@ -1,33 +1,44 @@
-function getDigit(num, place) {
-    return Math.floor(Math.abs(num) / Math.pow(10, place)) % 10;
+function extractDigit(num, place, base = 10) {
+    return Math.floor((num / Math.pow(base, place)) % base);
 }
 
-function digitCount(num) {
-    if (num === 0) return 1;
-    return Math.floor(Math.log10(Math.abs(num))) + 1;
+function normalizeNumber(num, scale) {
+    return Math.floor(num * scale);
 }
 
-function mostDigits(nums) {
-    let maxDigits = 0;
-    for (let i = 0; i < nums.length; i++) {
-        maxDigits = Math.max(maxDigits, digitCount(nums[i]));
-    }
-    return maxDigits;
+function countDigits(num) {
+    return num === 0 ? 1 : Math.ceil(Math.log10(num + 1));
 }
 
-function radixSort(arr) {
-    let maxDigits = mostDigits(arr.map(player => player.bAverage * 10000)); // Scale up for floating point
+function calculateMaxDigits(nums) {
+    return nums.reduce((max, num) => Math.max(max, countDigits(num)), 0);
+}
+
+function distributeToBuckets(arr, digitIndex, scale, base = 10) {
+    let buckets = Array.from({ length: base }, () => []);
+    arr.forEach(item => {
+        let digit = extractDigit(normalizeNumber(item.bAverage, scale), digitIndex, base);
+        buckets[digit].push(item);
+    });
+    return buckets;
+}
+
+function flattenBuckets(buckets) {
+    return buckets.reduce((flattened, bucket) => flattened.concat(bucket), []);
+}
+
+function radixSort(players, scale = 10000, base = 10) {
+    let maxDigits = calculateMaxDigits(players.map(player => normalizeNumber(player.bAverage, scale)));
 
     for (let k = 0; k < maxDigits; k++) {
-        let digitBuckets = Array.from({ length: 10 }, () => []);
-        for (let i = 0; i < arr.length; i++) {
-            let digit = getDigit(arr[i].bAverage * 10000, k);
-            digitBuckets[digit].push(arr[i]);
+        let buckets = distributeToBuckets(players, k, scale, base);
+        // Start concatenating from the last bucket to sort in descending order
+        players = [];
+        for (let j = buckets.length - 1; j >= 0; j--) {
+            players = players.concat(buckets[j]);
         }
-        arr = [].concat(...digitBuckets);
     }
-
-    return arr.reverse();
+    return players;
 }
 
-export{radixSort}
+export { radixSort };

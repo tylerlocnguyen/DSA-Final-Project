@@ -1,26 +1,40 @@
-function countingSort(arr, maxValue) {
-    let countArray = new Array(maxValue + 1).fill(0);
-    let outputArray = new Array(arr.length);
+function scaleValue(value, scale) {
+    return Math.floor(value * scale);
+}
 
-    // Fill countArray with the frequency of each value
+function initializeCountArray(maxValue) {
+    return new Array(maxValue + 1).fill(0);
+}
+
+function populateCountArray(arr, countArray, scale) {
     arr.forEach(player => {
-        let scaledValue = Math.floor(player.bAverage * 100); // Scaling bAverage
+        let scaledValue = scaleValue(player.bAverage, scale);
         countArray[scaledValue]++;
     });
+}
 
-    // Modify countArray to have positions of each value
+function accumulateCounts(countArray) {
     for (let i = 1; i < countArray.length; i++) {
         countArray[i] += countArray[i - 1];
     }
-
-    // Build the output array
-    for (let i = arr.length - 1; i >= 0; i--) {
-        let scaledValue = Math.floor(arr[i].bAverage * 100); // Scaling bAverage
-        outputArray[countArray[scaledValue] - 1] = arr[i];
-        countArray[scaledValue]--;
-    }
-
-    return outputArray;
 }
 
-export {countingSort};
+function createSortedArray(arr, countArray, scale) {
+    let sortedArray = new Array(arr.length);
+    for (let i = arr.length - 1; i >= 0; i--) {
+        let scaledValue = scaleValue(arr[i].bAverage, scale);
+        sortedArray[countArray[scaledValue] - 1] = arr[i];
+        countArray[scaledValue]--;
+    }
+    return sortedArray;
+}
+
+function countingSort(players, scale = 100) {
+    let maxValue = scaleValue(1, scale); // Assuming bAverage ranges from 0 to 1
+    let countArray = initializeCountArray(maxValue);
+    populateCountArray(players, countArray, scale);
+    accumulateCounts(countArray);
+    return createSortedArray(players, countArray, scale);
+}
+
+export { countingSort };
