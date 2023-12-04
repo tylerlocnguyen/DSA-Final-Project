@@ -1,10 +1,10 @@
-//Riot API Key
-const apiKey = 'RGAPI-fa781e32-d4db-4213-b537-d8ef30d5381f';
+const apiKey = 'RGAPI-fa781e32-d4db-4213-b537-d8ef30d5381f'
 
-
+// Importing necessary data and functions from other modules
 import { generatedData } from "./apiFetch.js";
 import { appendBAverage } from "./calcRank.js";
 
+// Selecting necessary HTML elements
 const numberOfPlayersInput = document.getElementById('numberOfPlayers');
 const container = document.getElementById('playerStatsInputs');
 const form = document.getElementById('playerStatsForm');
@@ -12,46 +12,51 @@ const selectElement = document.getElementById('champions');
 const sortMethodSelect = document.getElementById('sortMethod');
 let filteredData;
 
-// Create player input fields
+// Function to dynamically create player input fields based on the number of players
 function createPlayerInputFields(numberOfPlayers, container) {
-    container.innerHTML = '';
+    container.innerHTML = ''; // Clearing existing input fields
     for (let i = 1; i <= numberOfPlayers; i++) {
+        // Creating and configuring the input element
         const input = document.createElement('input');
         input.type = 'text';
         input.placeholder = `Username for Player ${i}`;
         input.id = `playerStat${i}`;
         input.className = `player-stat player-stat-${i}`;
 
+        // Creating a new row for every odd numbered input
         if (i % 2 === 1) {
             const row = document.createElement('div');
             row.className = 'input-row';
             container.appendChild(row);
         }
 
+        // Appending the input to the latest row
         container.lastElementChild.appendChild(input);
     }
 }
 
-// Event listener for champion selection change
+// Event listener to update filtered data when a champion is selected
 selectElement.addEventListener('change', function() {
     const selectedChampion = this.value;
     filteredData = generatedData.filter(player => player.Champion === selectedChampion);
     appendBAverage(filteredData);
 });
 
-// Event listener for number of players input change
+// Event listener to update input fields when the number of players changes
 numberOfPlayersInput.addEventListener('change', function() {
     const numberOfPlayers = parseInt(this.value, 10);
     createPlayerInputFields(numberOfPlayers, container);
 });
 
-// Function to fetch match details for a player
+// Async function to fetch match details for a given player
 async function getMatches(puuid) {
     const matchEndpoint = `https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=25&api_key=${apiKey}`;
     try {
         const response = await fetch(matchEndpoint);
         if (!response.ok) throw new Error(`Error fetching matchlist: ${response.status}`);
         const matchlistData = await response.json();
+
+        // Processing each match and extracting relevant details
         let matchDetails = [];
         for (let matchId of matchlistData) {
             const matchData = await fetch(`https://americas.api.riotgames.com/lol/match/v5/matches/${matchId}?api_key=${apiKey}`).then(res => res.json());
@@ -74,14 +79,14 @@ async function getMatches(puuid) {
     }
 }
 
-// Function to filter matches by selected champion
+// Function to filter the matches by the selected champion
 function filterByChamp(matchesData) {
     const selectedChampion = selectElement.value;
     return matchesData.map(playerMatches => playerMatches.filter(match => match.championName === selectedChampion))
                       .filter(playerMatches => playerMatches.length > 0);
 }
 
-// Function to process match data
+// Function to process and structure match data
 function processMatchData(filteredMatches) {
     return filteredMatches.map((playerMatches, index) => {
         if (playerMatches.length === 0) return null;
@@ -90,6 +95,8 @@ function processMatchData(filteredMatches) {
         const gamesPlayed = playerMatches.length;
         const wins = playerMatches.filter(match => match.win).length;
         const winRate = (wins / gamesPlayed) * 100;
+
+        // Calculating total kills, deaths, and assists for KDA
         let totalKills = 0, totalDeaths = 0, totalAssists = 0;
         playerMatches.forEach(match => {
             totalKills += match.kills;
@@ -97,6 +104,7 @@ function processMatchData(filteredMatches) {
             totalAssists += match.assists;
         });
         const kda = totalDeaths === 0 ? (totalKills + totalAssists) : (totalKills + totalAssists) / totalDeaths;
+
         return {
             PlayerName: playerName,
             Champion: playerMatches[0].championName,
@@ -107,7 +115,7 @@ function processMatchData(filteredMatches) {
     }).filter(playerData => playerData !== null);
 }
 
-// Form submission event listener
+// Event listener for form submission to fetch and process player stats
 form.addEventListener('submit', async function(e) {
     e.preventDefault();
     let playerStatsPromises = [];
@@ -119,6 +127,7 @@ form.addEventListener('submit', async function(e) {
         }
     }
 
+    // Handling responses and preparing data for leaderboard
     try {
         const responses = await Promise.all(playerStatsPromises);
         const playerStats = responses.map(response => response.status === 200 ? response.data : null).filter(data => data != null);
@@ -131,4 +140,5 @@ form.addEventListener('submit', async function(e) {
     }
 });
 
+// Exporting filteredData for use in other modules
 export { filteredData };

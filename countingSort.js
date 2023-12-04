@@ -26,7 +26,7 @@ function createSortedArray(arr, countArray, scale) {
         sortedArray[countArray[scaledValue] - 1] = arr[i];
         countArray[scaledValue]--;
     }
-    return sortedArray;
+    return sortedArray.reverse();
 }
 
 function countingSort(players, scale = 100) {

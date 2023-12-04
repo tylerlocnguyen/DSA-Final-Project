@@ -5,7 +5,7 @@ window.addEventListener('load', function() {
     const urlParams = new URLSearchParams(window.location.search);
     const selectedSortMethod = urlParams.get('sortMethod');
     const playerStats = JSON.parse(localStorage.getItem('playerStats'));
-    const leaderboardContainer = document.getElementById('leaderboard'); // Make sure this line is added
+    const leaderboardContainer = document.getElementById('leaderboard'); 
 
     if (playerStats) {
         let sortedPlayers;
@@ -15,6 +15,8 @@ window.addEventListener('load', function() {
             // Assuming the range of bAverage is from 0 to 1
             const maxValue = 100; // Since bAverage is scaled by 100
             sortedPlayers = countingSort(playerStats, maxValue);
+            console.log(sortedPlayers)
+     
         }      
         else if (selectedSortMethod === "radixSort") {
             sortedPlayers = radixSort(playerStats);
