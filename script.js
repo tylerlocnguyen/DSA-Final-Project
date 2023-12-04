@@ -52,7 +52,7 @@ selectElement.addEventListener('change', function(event) {
 
 
 //Riot API Key
-const apiKey = 'RGAPI-d190bdc9-bb0f-42de-b08e-aba468b6cad5';
+const apiKey = 'RGAPI-571bc804-bf84-47fc-a848-cb049c9b7e7e';
 
 
     numberOfPlayersInput.addEventListener('change', function () {
